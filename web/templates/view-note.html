@@ -15,8 +15,17 @@
 <script src="{{ url_for('static', filename='js/decrypt.js') }}" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof initialize === 'function') {
-        initialize("{{ encrypted_note|safe }}");
+    try {
+        if (typeof initialize === 'function') {
+            initialize("{{ encrypted_note|safe }}");
+        } else {
+            throw new Error("Initialization function not found.");
+        }
+    } catch (error) {
+        console.error("Initialization error:", error);
+        const errorMessageElement = document.getElementById("error-message");
+        errorMessageElement.classList.remove("d-none");
+        errorMessageElement.textContent = "An unexpected error occurred. Please refresh the page or contact support.";
     }
 });
 </script>
