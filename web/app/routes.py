@@ -1,5 +1,6 @@
 from flask import render_template, request, jsonify, make_response, redirect, url_for
 from sqlalchemy.orm import Session
+from loguru import logger
 from web.app.models import Note
 from web.app.database import get_db
 
@@ -7,6 +8,7 @@ from web.app.database import get_db
 def configure_routes(app):
     @app.errorhandler(404)
     def handle_404(error):
+        logger.error(f"404 Error: {error}")
         return render_template("404.html"), 404
 
     @app.route("/create_note", methods=["GET", "POST"])
@@ -33,7 +35,7 @@ def configure_routes(app):
                 return jsonify({"success": True}), 201
 
         except Exception as e:
-            print(f"Error saving note: {e}")
+            logger.error(f"Error saving note: {e}")
             return jsonify({"success": False, "error": str(e)}), 500
 
         finally:
@@ -55,7 +57,7 @@ def configure_routes(app):
             return render_template("confirm-view-note.html", temporary_key=temporary_key, secret_part=secret_part)
 
         except Exception as e:
-            print(f"Database error: {e}")
+            logger.error(f"Database error: {e}")
             return jsonify({"success": False, "error": f"Error fetching note: {str(e)}"}), 500
 
         finally:
@@ -81,7 +83,7 @@ def configure_routes(app):
             return response
 
         except Exception as e:
-            print(f"Database error: {e}")
+            logger.error(f"Database error: {e}")
             return jsonify({"success": False, "error": f"Error fetching note: {str(e)}"}), 500
 
         finally:
