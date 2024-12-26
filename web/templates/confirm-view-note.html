@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-5" style="max-width: 1000px; text-align: center;">
     <p class="text-muted mt-3" style="font-size: 14px;">
-        Once you open the note, it will be permanently deleted when you close the page. Make sure you're ready to view it.
+        Once you open the note, it will be permanently deleted when you close the page.
     </p>
     <div class="mt-4">
         <a href="{{ url_for('get_note_by_key', temporary_key=temporary_key, secret_part=secret_part) }}" class="btn btn-danger">Yes, View the Note</a>
