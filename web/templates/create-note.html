@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Create Note{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container" style="max-width: 1000px;">
+        <form id="note-form" action="/create_note" method="post" class="needs-validation" novalidate>
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            <div class="mb-3">
+                <textarea id="note" name="note" class="form-control" rows="5" placeholder="Type your note here..." required></textarea>
+                <div class="invalid-feedback">Please enter a note before saving.</div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" id="save-button" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="keyModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Note Link</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="text-danger">Save this link! Without it, you won't be able to access your note.</p>
+                <div class="input-group">
+                    <input type="text" id="noteLinkDisplay" class="form-control" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyLink()">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/encrypt.js') }}" defer></script>
+{% endblock %}
