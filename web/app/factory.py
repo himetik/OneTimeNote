@@ -2,6 +2,7 @@ import os
 import sys
 from flask import Flask
 from web.app.routes import configure_routes
+from loguru import logger
 
 
 def make_app():
@@ -11,5 +12,5 @@ def make_app():
         configure_routes(app)
         return app
     except Exception as error:
-        print(f"Error during app creation: {error}", file=sys.stderr)
+        logger.critical(f"Error during app creation: {error}")
         sys.exit(1)
