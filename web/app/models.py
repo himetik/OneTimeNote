@@ -11,7 +11,7 @@ class Note(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     note = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime)
+    created_at = Column(DateTime, default=datetime.utcnow)
     temporary_key = Column(String, unique=True, nullable=False)
 
     def __repr__(self):

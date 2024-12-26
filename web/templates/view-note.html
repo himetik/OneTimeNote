@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}View Note{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 1000px;">
+    <div class="alert alert-warning" style="font-size: 14px; margin-bottom: 1rem;">
+        <strong>Warning:</strong> The note will be permanently deleted after this page is closed. Please save it if you need it.
+    </div>
+    <div id="error-message" class="alert alert-danger d-none" style="font-size: 14px; margin-bottom: 1rem;"></div>
+    <div id="note-container" style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
+        <pre id="decrypted-note" class="text-muted" style="font-size: 16px; margin: 0; white-space: pre-wrap; word-wrap: break-word; font-family: inherit; opacity: 1; transition: opacity 0.3s ease-out;"></pre>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/decrypt.js') }}" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initialize === 'function') {
+        initialize("{{ encrypted_note|safe }}");
+    }
+});
+</script>
+{% endblock %}
