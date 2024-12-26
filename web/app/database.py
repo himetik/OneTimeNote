@@ -2,9 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from web.app.db_setup import DATABASE_URL
 from loguru import logger
-from web.app.logging import setup_logging
 
-setup_logging()
 
 try:
     engine = create_engine(DATABASE_URL)
