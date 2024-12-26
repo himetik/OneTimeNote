@@ -10,7 +10,7 @@ async function importKey(keyString) {
         );
     } catch (error) {
         console.error("Error importing key:", error);
-        throw error;
+        throw new Error("Key import failed.");
     }
 }
 
@@ -20,27 +20,24 @@ async function decrypt(encryptedData, key) {
         const iv = encryptedArray.slice(0, 12);
         const encryptedText = encryptedArray.slice(12);
         const decrypted = await crypto.subtle.decrypt(
-            { name: 'AES-GCM', iv: iv },
+            { name: 'AES-GCM', iv },
             key,
             encryptedText
         );
-        const decoder = new TextDecoder();
-        return decoder.decode(decrypted);
+        return new TextDecoder().decode(decrypted);
     } catch (error) {
         console.error("Decryption error:", error);
-        throw error;
+        throw new Error("Decryption failed.");
     }
 }
 
-async function decryptNote(encryptedNote, secretKey) {
+async function decryptNoteAndDisplay(encryptedNote, secretKey) {
     try {
         const key = await importKey(secretKey);
         const decryptedNote = await decrypt(encryptedNote, key);
         const noteElement = document.getElementById("decrypted-note");
         noteElement.textContent = decryptedNote;
         window.decryptedNoteContent = decryptedNote;
-        encryptedNote = null;
-        secretKey = null;
     } catch (error) {
         const errorMessageElement = document.getElementById("error-message");
         errorMessageElement.classList.remove("d-none");
@@ -57,9 +54,7 @@ function clearNote() {
             noteElement.closest('#note-container').style.display = 'none';
         }, 300);
     }
-    if (window.decryptedNoteContent) {
-        window.decryptedNoteContent = null;
-    }
+    window.decryptedNoteContent = null;
 }
 
 function handleVisibilityChange() {
@@ -70,11 +65,17 @@ function handleVisibilityChange() {
 
 window.initialize = function(encryptedNote) {
     const secretPart = window.location.pathname.split("/").pop();
-    if (sessionStorage.getItem("noteViewed")) {
+    const isNoteViewed = sessionStorage.getItem("noteViewed");
+
+    if (isNoteViewed === encryptedNote) {
+        console.warn("Note already viewed in this session.");
         return;
     }
-    decryptNote(encryptedNote, secretPart);
-    sessionStorage.setItem("noteViewed", "true");
+
+    decryptNoteAndDisplay(encryptedNote, secretPart);
+
+    sessionStorage.setItem("noteViewed", encryptedNote);
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("beforeunload", clearNote);
     window.addEventListener("unload", clearNote);
