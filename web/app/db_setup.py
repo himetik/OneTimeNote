@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from loguru import logger
 
 
 def get_database_url():
@@ -16,7 +17,8 @@ def get_database_url():
             raise ValueError("Missing required environment variables: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB.")
 
         return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
-    except Exception:
+    except Exception as error:
+        logger.error(f"Error while getting the database URL: {error}")
         return None
 
 
