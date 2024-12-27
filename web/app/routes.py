@@ -11,7 +11,6 @@ def configure_routes(app):
         logger.error(f"404 Error: {error}")
         return render_template("404.html"), 404
 
-    @app.route("/create_note", methods=["GET", "POST"])
     @app.route("/", methods=["GET", "POST"])
     def create_note():
         db: Session = next(get_db())
