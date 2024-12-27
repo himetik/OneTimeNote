@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const secretPart = await generateEncryptionKey();
             const key = await importKey(secretPart);
             const encryptedNote = await encrypt(originalNote, key);
-            const response = await fetch('/create_note', {
+            const response = await fetch('/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ note: encryptedNote, secret_part: secretPart, temporary_key: temporaryKey }),
