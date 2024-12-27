@@ -41,6 +41,7 @@ function showKeyModal(url) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const noteTextarea = document.getElementById('note');
+    const maxNoteLength = 1200; // Temporary solution
     window.addEventListener('beforeunload', function () {
         noteTextarea.value = '';
     });
@@ -48,6 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const originalNote = noteTextarea.value;
         if (!originalNote.trim()) {
             alert("Note cannot be empty!");
+            return;
+        }
+        if (originalNote.length > maxNoteLength) {
+            alert(`Note is too long! Maximum length is ${maxNoteLength} characters.`);
             return;
         }
         try {
@@ -65,7 +70,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }),
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorData = await response.json();
+                if (errorData.error) {
+                    alert(`Error: ${errorData.error}`);
+                } else {
+                    alert(`HTTP error! Status: ${response.status}`);
+                }
+                return;
             }
             const result = await response.json();
             if (result.success) {
