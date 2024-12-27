@@ -6,7 +6,7 @@
         Once you open the note, it will be permanently deleted when you close the page.
     </p>
     <div class="mt-4">
-        <a href="{{ url_for('get_note_by_key', temporary_key=temporary_key, secret_part=secret_part) }}" class="btn btn-primary">View the Note</a>
+        <a href="{{ url_for('notes.get_note_by_key', temporary_key=temporary_key, secret_part=secret_part) }}" class="btn btn-primary">View the Note</a>
     </div>
 </div>
 {% endblock %}
