@@ -5,6 +5,7 @@ from web.app.database import get_db
 from web.app.models import Note
 from web.app.services import NoteService
 from web.app.decorators import no_cache
+from web.app.config import MAX_NOTE_LENGTH
 
 
 note_bp = Blueprint('notes', __name__)
@@ -86,6 +87,11 @@ def create_note():
         note_content = data.get("note")
         secret_part = data.get("secret_part")
         temporary_key = data.get("temporary_key")
+        if note_content and len(note_content) > MAX_NOTE_LENGTH:
+            return jsonify({
+                "success": False,
+                "error": f"The record length exceeds {MAX_NOTE_LENGTH} characters."
+            }), 400
         if not all([note_content, secret_part, temporary_key]):
             return jsonify({
                 "success": False,

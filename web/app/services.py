@@ -1,5 +1,6 @@
 from typing import Optional
 from web.app.models import Note
+from web.app.config import MAX_NOTE_LENGTH
 
 
 class NoteService:
@@ -7,6 +8,8 @@ class NoteService:
         self.db_session = db_session
 
     def create_note(self, note_content: str, temporary_key: str) -> Note:
+        if len(note_content) > MAX_NOTE_LENGTH:
+            raise ValueError(f"The record length exceeds {MAX_NOTE_LENGTH} characters.")
         with self.db_session() as db:
             new_note = Note(note=note_content, temporary_key=temporary_key)
             db.add(new_note)
