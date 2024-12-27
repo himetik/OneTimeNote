@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-4" style="max-width: 1400px;">
     <div class="w-100 mx-auto">
-        <form id="note-form" action="/" method="post" class="needs-validation p-4" novalidate>
+        <form id="note-form" action="/creation" method="post" class="needs-validation p-4" novalidate>
             {% if error %}
             <div class="alert alert-danger" role="alert">
                 {{ error }}
@@ -14,7 +14,7 @@
                 <div class="invalid-feedback">Please enter a note before saving.</div>
             </div>
             <div class="d-flex justify-content-end">
-                <button type="submit" id="save-button" class="btn btn-primary">Save</button>
+                <button type="button" id="save-button" class="btn btn-primary">Save</button>
             </div>
         </form>
     </div>

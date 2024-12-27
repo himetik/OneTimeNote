@@ -11,27 +11,27 @@ def configure_routes(app):
         logger.error(f"404 Error: {error}")
         return render_template("404.html"), 404
 
-    @app.route("/", methods=["GET", "POST"])
+    @app.route("/", methods=["GET"])
+    def show_create_note_page():
+        return render_template("create-note.html")
+
+    @app.route("/creation", methods=["POST"])
     def create_note():
         db: Session = next(get_db())
         try:
-            if request.method == "GET":
-                return render_template("create-note.html")
+            data = request.get_json()
+            note_content = data.get("note")
+            secret_part = data.get("secret_part")
+            temporary_key = data.get("temporary_key")
 
-            if request.method == "POST":
-                data = request.get_json()
-                note_content = data.get("note")
-                secret_part = data.get("secret_part")
-                temporary_key = data.get("temporary_key")
+            if not note_content or not secret_part or not temporary_key:
+                return jsonify({"success": False, "error": "Note, secret part, and temporary key are required"}), 400
 
-                if not note_content or not secret_part or not temporary_key:
-                    return jsonify({"success": False, "error": "Note, secret part, and temporary key are required"}), 400
+            new_note = Note(note=note_content, temporary_key=temporary_key)
+            db.add(new_note)
+            db.commit()
 
-                new_note = Note(note=note_content, temporary_key=temporary_key)
-                db.add(new_note)
-                db.commit()
-
-                return jsonify({"success": True}), 201
+            return jsonify({"success": True}), 201
 
         except Exception as e:
             logger.error(f"Error saving note: {e}")
