@@ -39,9 +39,12 @@ function showKeyModal(url) {
     modal.show();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('save-button').addEventListener('click', async function() {
-        const noteTextarea = document.getElementById('note');
+document.addEventListener('DOMContentLoaded', function () {
+    const noteTextarea = document.getElementById('note');
+    window.addEventListener('beforeunload', function () {
+        noteTextarea.value = '';
+    });
+    document.getElementById('save-button').addEventListener('click', async function () {
         const originalNote = noteTextarea.value;
         if (!originalNote.trim()) {
             alert("Note cannot be empty!");
@@ -55,7 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/creation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ note: encryptedNote, secret_part: secretPart, temporary_key: temporaryKey }),
+                body: JSON.stringify({
+                    note: encryptedNote,
+                    secret_part: secretPart,
+                    temporary_key: temporaryKey,
+                }),
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
