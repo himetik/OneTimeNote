@@ -1,26 +1,14 @@
 from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from loguru import logger
 from contextlib import contextmanager
 from web.app.database import get_db
 from web.app.models import Note
 from web.app.services import NoteService
 from web.app.decorators import no_cache
-from web.app.config import MAX_NOTE_LENGTH, RATE_LIMIT_GLOBAL, REDIS_URI
+from web.app.config import MAX_NOTE_LENGTH
 
 
 note_bp = Blueprint('notes', __name__)
-
-
-limiter = Limiter(
-    get_remote_address,
-    default_limits=[RATE_LIMIT_GLOBAL],
-    storage_uri=REDIS_URI,
-)
-
-
-limiter.init_app(note_bp)
 
 
 class NoteController:
@@ -164,12 +152,3 @@ def get_note_by_key(temporary_key, secret_part):
             "success": False,
             "error": f"Error fetching note: {str(e)}"
         }), 500
-
-
-@note_bp.errorhandler(429)
-def rate_limit_exceeded(e):
-    logger.warning(f"Rate limit exceeded: {e.description}")
-    return jsonify({
-        "success": False,
-        "error": "Too many requests. Please try again later."
-    }), 429

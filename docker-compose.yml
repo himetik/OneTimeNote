@@ -12,7 +12,6 @@ services:
       - .env
     depends_on:
       - database
-      - redis
     command: >
       sh -c "poetry run python3 -m web.app.database &&
              poetry run gunicorn web.app.wsgi:app --bind 0.0.0.0:8000 --workers 3"
@@ -28,10 +27,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-
-  redis:
-    image: redis:latest
-    restart: always
 
 volumes:
   postgres_data:
