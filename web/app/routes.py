@@ -6,6 +6,7 @@ from web.app.models import Note
 from web.app.services import NoteService
 from web.app.decorators import no_cache
 from web.app.config import MAX_NOTE_LENGTH
+from sqlalchemy.sql import text
 
 
 note_bp = Blueprint('notes', __name__)
@@ -152,3 +153,13 @@ def get_note_by_key(temporary_key, secret_part):
             "success": False,
             "error": f"Error fetching note: {str(e)}"
         }), 500
+
+@note_bp.route("/health", methods=["GET"])
+def health_check():
+    try:
+        with get_db_session() as db:
+            db.execute(text('SELECT 1'))
+        return jsonify({"status": "healthy"}), 200
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
