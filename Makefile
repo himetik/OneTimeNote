@@ -1,8 +1,8 @@
 dev-start:
 		@sudo docker-compose build && sudo docker-compose up
-start:
+up:
 		@sudo docker-compose build && sudo docker-compose up -d
-stop:
+down:
 		@sudo docker-compose down
 clean:
 		@find . -type f -name "*.pyc" -delete
