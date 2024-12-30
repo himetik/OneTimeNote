@@ -22,9 +22,13 @@ jobs:
         eval "$(ssh-agent -s)"
         ssh-add ~/.ssh/id_ed25519_github
 
+    - name: Test SSH Connection
+      run: |
+        ssh -i ~/.ssh/id_ed25519_github -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} echo "SSH connection successful"
+
     - name: Deploy code to server
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+        ssh -i ~/.ssh/id_ed25519_github -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
           set -e
           cd ${{ secrets.DEPLOY_PATH }}
           git fetch --all
