@@ -26,3 +26,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 line-length = 120
 exclude = ["*.js", "*.html", "*.css"]
+
+[tool.poetry.scripts]
+start = "gunicorn web.app.wsgi:app --bind 0.0.0.0:8000 --workers 3"
