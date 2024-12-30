@@ -15,4 +15,4 @@ COPY . /app
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "gunicorn", "web.app.wsgi:app", "--bind", "0.0.0.0:8000", "--workers", "3"]
+CMD ["poetry", "run", "start"]
