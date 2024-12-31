@@ -17,6 +17,7 @@ ruff = "^0.8.4"
 loguru = "^0.7.3"
 flask-limiter = "^3.9.2"
 redis = "^5.2.1"
+alembic = "^1.14.0"
 
 
 [build-system]
