@@ -58,18 +58,6 @@ def get_db_session():
         db.close()
 
 
-@note_bp.errorhandler(404)
-def handle_404(error):
-    logger.error(f"404 Error: {error}")
-    return render_template("404.html"), 404
-
-
-@note_bp.errorhandler(500)
-def handle_500(error):
-    logger.error(f"500 Error: {error}")
-    return render_template("500.html"), 500
-
-
 @note_bp.after_request
 @no_cache
 def after_request(response):
