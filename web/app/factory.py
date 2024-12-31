@@ -14,10 +14,12 @@ def make_app():
                    static_folder='../static', 
                    template_folder="../templates")
         app.secret_key = os.getenv("SECRET_KEY", "fallback_secret_key")
+        redis_url = os.getenv("REDIS_URL")
         Limiter(
             get_remote_address,
             app=app,
             default_limits=["3 per second"],
+            storage_uri=redis_url,
             headers_enabled=True
         )
         ErrorHandler(app)
