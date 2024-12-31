@@ -72,7 +72,7 @@ services:
       sh -c "
       python -m venv /opt/venv &&
       /opt/venv/bin/pip install --upgrade pip &&
-      /opt/venv/bin/pip install psycopg2 sqlalchemy alembic &&
+      /opt/venv/bin/pip install psycopg2 sqlalchemy alembic python-dotenv &&
       /opt/venv/bin/alembic upgrade head
       "
 
