@@ -73,9 +73,9 @@ services:
       python -m venv /opt/venv &&
       /opt/venv/bin/pip install --upgrade pip &&
       /opt/venv/bin/pip install psycopg2 sqlalchemy alembic python-dotenv &&
-      /opt/venv/bin/alembic upgrade head &&
-      tail -f /dev/null
+      /opt/venv/bin/alembic upgrade head
       "
+    restart: "no"
 
   redis:
     image: redis:latest
