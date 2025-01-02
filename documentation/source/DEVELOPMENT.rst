@@ -30,8 +30,7 @@ Implementation of Environment Variables
 
 .. code-block:: sh
 
-    # use .env.example as instance
-    touch .env
+    touch .env  # use .env.example as instance
 
 Container Management
 --------
