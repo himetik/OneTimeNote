@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for, send_from_directory
 from loguru import logger
 from contextlib import contextmanager
 from web.app.database import get_db
@@ -142,6 +142,7 @@ def get_note_by_key(temporary_key, secret_part):
             "error": f"Error fetching note: {str(e)}"
         }), 500
 
+
 @note_bp.route("/health", methods=["GET"])
 def health_check():
     try:
@@ -151,3 +152,8 @@ def health_check():
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
+
+@note_bp.route('/documentation/<path:filename>', methods=['GET'])
+def serve_docs(filename):
+    return send_from_directory('../static/documentation', filename)
