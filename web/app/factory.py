@@ -12,7 +12,7 @@ def make_app():
     try:
         app = Flask(__name__, 
                    static_folder='../static', 
-                   template_folder="../templates")
+                   template_folder='../templates')
         app.secret_key = os.getenv("SECRET_KEY", "fallback_secret_key")
         redis_url = os.getenv("REDIS_URL")
         Limiter(
