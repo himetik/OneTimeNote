@@ -34,4 +34,3 @@ dist/
 *.egg
 *.egg-info/
 *.whl
-/documentation/
