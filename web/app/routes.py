@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for, send_from_directory
+from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
 from loguru import logger
 from contextlib import contextmanager
 from web.app.database import get_db
@@ -152,8 +152,3 @@ def health_check():
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
-
-
-@note_bp.route('/documentation/<path:filename>', methods=['GET'])
-def serve_docs(filename):
-    return send_from_directory('../static/documentation', filename)

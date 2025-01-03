@@ -13,8 +13,6 @@ RUN poetry config virtualenvs.create false && poetry install --no-dev
 
 COPY . /app
 
-RUN sphinx-build -b html documentation/source web/app/static/documentation
-
 EXPOSE 8000
 
 CMD sh -c "poetry run python3 -m web.app.database && poetry run gunicorn web.app.wsgi:app --bind 0.0.0.0:8000 --workers 3"
