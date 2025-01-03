@@ -142,7 +142,6 @@ def get_note_by_key(temporary_key, secret_part):
             "error": f"Error fetching note: {str(e)}"
         }), 500
 
-
 @note_bp.route("/health", methods=["GET"])
 def health_check():
     try:
