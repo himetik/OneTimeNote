@@ -15,4 +15,4 @@ COPY . /app
 
 EXPOSE 8000
 
-CMD sh -c "poetry run python3 -m web.app.database && poetry run gunicorn web.app.wsgi:app --bind 0.0.0.0:8000 --workers 3"
+CMD sh -c "poetry run alembic upgrade head && poetry run gunicorn web.app.wsgi:app --bind 0.0.0.0:8000 --workers 3"
