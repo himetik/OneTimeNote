@@ -3,50 +3,12 @@ from loguru import logger
 from contextlib import contextmanager
 from web.app.database import get_db
 from web.app.models import Note
-from web.app.services import NoteService
 from web.app.decorators import no_cache
 from web.app.config import MAX_NOTE_LENGTH
 from sqlalchemy.sql import text
 
 
 note_bp = Blueprint('notes', __name__)
-
-
-class NoteController:
-    def __init__(self, note_service: NoteService):
-        self.note_service = note_service
-
-    def create_note(self, note_content: str, secret_part: str, temporary_key: str) -> tuple:
-        if not all([note_content, secret_part, temporary_key]):
-            return jsonify({
-                "success": False,
-                "error": "Note, secret part, and temporary key are required"
-            }), 400
-
-        try:
-            self.note_service.create_note(note_content, temporary_key)
-            return jsonify({"success": True}), 201
-        except Exception as e:
-            logger.error(f"Error saving note: {e}")
-            return jsonify({"success": False, "error": str(e)}), 500
-
-    def get_note(self, temporary_key: str, secret_part: str) -> tuple:
-        try:
-            note = self.note_service.get_note(temporary_key)
-            if not note:
-                return render_template("404.html"), 404
-
-            response = make_response(
-                render_template("view-note.html", encrypted_note=note.note)
-            )
-            self.note_service.delete_note(note)
-            return response
-        except Exception as e:
-            logger.error(f"Database error: {e}")
-            return jsonify({
-                "success": False,
-                "error": f"Error fetching note: {str(e)}"
-            }), 500
 
 
 @contextmanager
@@ -141,6 +103,7 @@ def get_note_by_key(temporary_key, secret_part):
             "success": False,
             "error": f"Error fetching note: {str(e)}"
         }), 500
+
 
 @note_bp.route("/health", methods=["GET"])
 def health_check():
