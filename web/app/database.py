@@ -25,19 +25,3 @@ def get_db():
             db.close()
         except Exception as error:
             logger.error(f"Error while closing database session: {error}")
-
-
-def db_setup():
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as error:
-        logger.error(f"Error during database setup: {error}")
-        raise
-
-
-if __name__ == "__main__":
-    try:
-        db_setup()
-    except Exception as error:
-        logger.critical(f"Critical error during database initialization: {error}")
-        raise
