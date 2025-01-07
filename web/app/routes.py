@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, request, jsonify, make_response, r
 from loguru import logger
 from contextlib import contextmanager
 from web.app.database import get_db
-from web.app.models import Note
 from web.app.decorators import no_cache
 from web.app.config import MAX_NOTE_LENGTH
+from web.app.note_service import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
 from sqlalchemy.sql import text
 
 
@@ -38,6 +38,7 @@ def create_note():
         note_content = data.get("note")
         secret_part = data.get("secret_part")
         temporary_key = data.get("temporary_key")
+
         if note_content and len(note_content) > MAX_NOTE_LENGTH:
             return jsonify({
                 "success": False,
@@ -48,10 +49,9 @@ def create_note():
                 "success": False,
                 "error": "Note, secret part, and temporary key are required"
             }), 400
+
         with get_db_session() as db:
-            new_note = Note(note=note_content, temporary_key=temporary_key)
-            db.add(new_note)
-            db.commit()
+            create_note_in_db(db, note_content, temporary_key)
         return jsonify({"success": True}), 201
     except Exception as e:
         logger.error(f"Error saving note: {e}")
@@ -69,7 +69,7 @@ def redirect_to_confirm(temporary_key, secret_part):
 def confirm_view(temporary_key, secret_part):
     try:
         with get_db_session() as db:
-            note = db.query(Note).filter(Note.temporary_key == temporary_key).first()
+            note = get_note_by_temporary_key(db, temporary_key)
             if not note:
                 return render_template("404.html"), 404
         return render_template("confirm-view-note.html",
@@ -87,15 +87,14 @@ def confirm_view(temporary_key, secret_part):
 def get_note_by_key(temporary_key, secret_part):
     try:
         with get_db_session() as db:
-            note = db.query(Note).filter(Note.temporary_key == temporary_key).first()
+            note = get_note_by_temporary_key(db, temporary_key)
             if not note:
                 return render_template("404.html"), 404
             encrypted_note = note.note
             response = make_response(
                 render_template("view-note.html", encrypted_note=encrypted_note)
             )
-            db.delete(note)
-            db.commit()
+            delete_note_from_db(db, note)
             return response
     except Exception as e:
         logger.error(f"Database error: {e}")
