@@ -1,23 +1,33 @@
-from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for, g
 from loguru import logger
-from contextlib import contextmanager
 from web.app.database import get_db
 from web.app.decorators import no_cache
 from web.app.config import MAX_NOTE_LENGTH
 from web.app.note_service import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
 from sqlalchemy.sql import text
+from sqlalchemy.exc import SQLAlchemyError
 
 
 note_bp = Blueprint('notes', __name__)
 
 
-@contextmanager
-def get_db_session():
-    db = next(get_db())
+@note_bp.before_request
+def set_db_session():
     try:
-        yield db
-    finally:
-        db.close()
+        g.db = next(get_db())
+    except SQLAlchemyError as e:
+        logger.error(f"Ошибка при создании сессии базы данных: {e}")
+        return jsonify({"success": False, "error": "Ошибка подключения к базе данных"}), 500
+
+
+@note_bp.teardown_request
+def close_db_session(exception=None):
+    db = g.get('db', None)
+    if db:
+        try:
+            db.close()
+        except SQLAlchemyError as e:
+            logger.error(f"Ошибка при закрытии сессии базы данных: {e}")
 
 
 @note_bp.after_request
@@ -50,8 +60,7 @@ def create_note():
                 "error": "Note, secret part, and temporary key are required"
             }), 400
 
-        with get_db_session() as db:
-            create_note_in_db(db, note_content, temporary_key)
+        create_note_in_db(g.db, note_content, temporary_key)
         return jsonify({"success": True}), 201
     except Exception as e:
         logger.error(f"Error saving note: {e}")
@@ -61,20 +70,19 @@ def create_note():
 @note_bp.route("/notes/<temporary_key>/<secret_part>", methods=["GET"])
 def redirect_to_confirm(temporary_key, secret_part):
     return redirect(url_for('notes.confirm_view',
-                          temporary_key=temporary_key,
-                          secret_part=secret_part))
+                            temporary_key=temporary_key,
+                            secret_part=secret_part))
 
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])
 def confirm_view(temporary_key, secret_part):
     try:
-        with get_db_session() as db:
-            note = get_note_by_temporary_key(db, temporary_key)
-            if not note:
-                return render_template("404.html"), 404
+        note = get_note_by_temporary_key(g.db, temporary_key)
+        if not note:
+            return render_template("404.html"), 404
         return render_template("confirm-view-note.html",
-                             temporary_key=temporary_key,
-                             secret_part=secret_part)
+                               temporary_key=temporary_key,
+                               secret_part=secret_part)
     except Exception as e:
         logger.error(f"Database error: {e}")
         return jsonify({
@@ -86,16 +94,15 @@ def confirm_view(temporary_key, secret_part):
 @note_bp.route("/view/<temporary_key>/<secret_part>", methods=["GET"])
 def get_note_by_key(temporary_key, secret_part):
     try:
-        with get_db_session() as db:
-            note = get_note_by_temporary_key(db, temporary_key)
-            if not note:
-                return render_template("404.html"), 404
-            encrypted_note = note.note
-            response = make_response(
-                render_template("view-note.html", encrypted_note=encrypted_note)
-            )
-            delete_note_from_db(db, note)
-            return response
+        note = get_note_by_temporary_key(g.db, temporary_key)
+        if not note:
+            return render_template("404.html"), 404
+        encrypted_note = note.note
+        response = make_response(
+            render_template("view-note.html", encrypted_note=encrypted_note)
+        )
+        delete_note_from_db(g.db, note)
+        return response
     except Exception as e:
         logger.error(f"Database error: {e}")
         return jsonify({
@@ -107,8 +114,7 @@ def get_note_by_key(temporary_key, secret_part):
 @note_bp.route("/health", methods=["GET"])
 def health_check():
     try:
-        with get_db_session() as db:
-            db.execute(text('SELECT 1'))
+        g.db.execute(text('SELECT 1'))
         return jsonify({"status": "healthy"}), 200
     except Exception as e:
         logger.error(f"Health check failed: {e}")
