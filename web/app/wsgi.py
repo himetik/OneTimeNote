@@ -2,9 +2,17 @@ from web.app.application import app
 from loguru import logger
 
 
-if __name__ == "__main__":
+def run_app():
+    app.run()
+
+
+def main():
     try:
-        app.run()
+        run_app()
     except Exception as error:
         logger.critical(f"Critical error while running the application: {error}")
         raise
+
+
+if __name__ == "__main__":
+    main()
