@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for, g
 from loguru import logger
 from web.app.database import get_db
-from web.app.decorators import no_cache
 from web.app.config import MAX_NOTE_LENGTH
 from web.app.note_service import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
 from sqlalchemy.sql import text
@@ -28,12 +27,6 @@ def close_db_session(exception=None):
             db.close()
         except SQLAlchemyError as e:
             logger.error(f"Ошибка при закрытии сессии базы данных: {e}")
-
-
-@note_bp.after_request
-@no_cache
-def after_request(response):
-    return response
 
 
 @note_bp.route("/", methods=["GET"])
