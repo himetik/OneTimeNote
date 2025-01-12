@@ -8,8 +8,8 @@ from web.app.error_handlers import ErrorHandler
 
 def configure_limiter(app):
     redis_url = os.getenv("REDIS_URL")
-    return Limiter(
-        get_remote_address,
+    Limiter(
+        key_func=get_remote_address,
         app=app,
         default_limits=["3 per second"],
         storage_uri=redis_url,
@@ -31,6 +31,3 @@ def create_app():
 
 
 app = create_app()
-
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8000)
