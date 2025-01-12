@@ -35,9 +35,7 @@ def create_note():
 
 @note_bp.route("/notes/<temporary_key>/<secret_part>", methods=["GET"])
 def redirect_to_confirm(temporary_key, secret_part):
-    return redirect(url_for('notes.confirm_view',
-                            temporary_key=temporary_key,
-                            secret_part=secret_part))
+    return redirect(url_for('notes.confirm_view', temporary_key=temporary_key, secret_part=secret_part))
 
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])
@@ -45,9 +43,7 @@ def confirm_view(temporary_key, secret_part):
     note = get_note_by_temporary_key(g.db, temporary_key)
     if not note:
         abort(404)
-    return render_template("confirm-view-note.html",
-                           temporary_key=temporary_key,
-                           secret_part=secret_part)
+    return render_template("confirm-view-note.html", temporary_key=temporary_key, secret_part=secret_part)
 
 
 @note_bp.route("/view/<temporary_key>/<secret_part>", methods=["GET"])
