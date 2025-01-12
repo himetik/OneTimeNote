@@ -1,8 +1,8 @@
 from loguru import logger
 import os
+from web.app.config import LOG_DIR
 
 
-LOG_DIR = "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 

@@ -9,3 +9,5 @@ DATABASE_URL = (
 )
 
 MAX_NOTE_LENGTH = 1200
+
+LOG_DIR = "logs"
