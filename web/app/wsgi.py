@@ -6,7 +6,8 @@ from web.app.rate_limiter import configure_limiter
 
 
 def create_app():
-    app = Flask(__name__, static_folder="../static", template_folder="../templates", secret_key=os.getenv("SECRET_KEY", "fallback_secret_key"))
+    app = Flask(__name__, static_folder="../static", template_folder="../templates")
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback_secret_key")
     app.register_blueprint(note_bp)
     ErrorHandler(app)
     configure_limiter(app)
