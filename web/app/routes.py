@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, render_template, request, jsonify, redirect, url_for, g
-from web.app.database import get_db, create_note_in_db, get_note_by_temporary_key, delete_note_from_db
+from web.app.crud import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
+from web.app.database import get_db
 from sqlalchemy.sql import text
 
 
