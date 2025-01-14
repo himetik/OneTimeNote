@@ -12,7 +12,7 @@ def set_db_session():
 
 
 @note_bp.teardown_request
-def close_db_session():
+def close_db_session(exception=None):
     db = g.pop('db', None)
     if db:
         db.close()
