@@ -1,6 +1,7 @@
 from flask import Blueprint, abort, render_template, request, jsonify, redirect, url_for, g
 from web.app.database import get_db
 from web.app.note_service import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
+from sqlalchemy.sql import text
 
 
 note_bp = Blueprint('notes', __name__)
@@ -48,7 +49,7 @@ def confirm_view(temporary_key, secret_part):
 
 
 @note_bp.route("/view/<temporary_key>/<secret_part>", methods=["GET"])
-def get_note_by_key(temporary_key):
+def get_note_by_key(temporary_key, secret_part):
     note = get_valid_note(temporary_key)
     encrypted_note = note.note
     delete_note_from_db(g.db, note)
@@ -57,5 +58,5 @@ def get_note_by_key(temporary_key):
 
 @note_bp.route("/health", methods=["GET"])
 def health_check():
-    g.db.execute('SELECT 1')
+    g.db.execute(text('SELECT 1'))
     return jsonify({"status": "healthy"}), 200
