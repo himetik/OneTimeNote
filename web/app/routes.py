@@ -1,7 +1,6 @@
 from flask import Blueprint, abort, render_template, request, jsonify, redirect, url_for, g
 from web.app.database import get_db
 from web.app.note_service import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
-from sqlalchemy.sql import text
 
 
 note_bp = Blueprint('notes', __name__)
@@ -14,17 +13,16 @@ def set_db_session():
 
 @note_bp.teardown_request
 def close_db_session():
-    db = g.get('db', None)
+    db = g.pop('db', None)
     if db:
         db.close()
 
 
-def validate_and_get_note_data(temporary_key):
+def get_valid_note(temporary_key):
     note = get_note_by_temporary_key(g.db, temporary_key)
     if not note:
         abort(404)
     return note
-
 
 @note_bp.route("/", methods=["GET"])
 def show_create_note_page():
@@ -45,13 +43,13 @@ def redirect_to_confirm(temporary_key, secret_part):
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])
 def confirm_view(temporary_key, secret_part):
-    validate_and_get_note_data(temporary_key)
+    get_valid_note(temporary_key)
     return render_template("confirm-view-note.html", temporary_key=temporary_key, secret_part=secret_part)
 
 
 @note_bp.route("/view/<temporary_key>/<secret_part>", methods=["GET"])
 def get_note_by_key(temporary_key):
-    note = validate_and_get_note_data(temporary_key)
+    note = get_valid_note(temporary_key)
     encrypted_note = note.note
     delete_note_from_db(g.db, note)
     return render_template("view-note.html", encrypted_note=encrypted_note)
@@ -59,5 +57,5 @@ def get_note_by_key(temporary_key):
 
 @note_bp.route("/health", methods=["GET"])
 def health_check():
-    g.db.execute(text('SELECT 1'))
+    g.db.execute('SELECT 1')
     return jsonify({"status": "healthy"}), 200
