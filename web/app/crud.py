@@ -1,12 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import Generator
-from web.app.init_database import SessionLocal
 from web.app.models import Note
-
-
-def get_db() -> Generator[Session, None, None]:
-    with SessionLocal() as db:
-        yield db
 
 
 def create_note_in_db(db: Session, note_content: str, temporary_key: str) -> Note:
