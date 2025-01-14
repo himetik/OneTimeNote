@@ -1,7 +1,6 @@
 import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from web.app.config import RATE_LIMIT
 
 
 def configure_limiter(app):
@@ -9,7 +8,7 @@ def configure_limiter(app):
     Limiter(
         key_func=get_remote_address,
         app=app,
-        default_limits = [RATE_LIMIT],
+        default_limits=["3 per second"],
         storage_uri=redis_url,
         headers_enabled=True
     )
