@@ -1,5 +1,5 @@
-from flask import Blueprint, abort, render_template, request, jsonify, g
-from web.app.crud import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
+from flask import Blueprint, abort, render_template, request, jsonify, g, redirect, url_for
+from web.app.crud import create_note_in_db, get_note_by_temporary_key, delete_note_from_db, update_note_confirmation
 from web.app.database import get_db
 from sqlalchemy.sql import text
 
@@ -39,13 +39,25 @@ def create_note():
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])
 def confirm_view(temporary_key, secret_part):
-    get_valid_note(temporary_key)
+    note = get_valid_note(temporary_key)
+    if note.is_confirmed:
+        return redirect(url_for('notes.get_note_by_key', temporary_key=temporary_key, secret_part=secret_part))
     return render_template("confirm-view-note.html", temporary_key=temporary_key, secret_part=secret_part)
+
+
+@note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["POST"])
+def confirm_note_view(temporary_key, secret_part):
+    note = get_valid_note(temporary_key)
+    if not note.is_confirmed:
+        update_note_confirmation(g.db, temporary_key)
+    return redirect(url_for('notes.get_note_by_key', temporary_key=temporary_key, secret_part=secret_part))
 
 
 @note_bp.route("/view/<temporary_key>/<secret_part>", methods=["GET"])
 def get_note_by_key(temporary_key, secret_part):
     note = get_valid_note(temporary_key)
+    if not note.is_confirmed:
+        return redirect(url_for('notes.confirm_view', temporary_key=temporary_key, secret_part=secret_part))
     encrypted_note = note.note
     delete_note_from_db(g.db, note)
     return render_template("view-note.html", encrypted_note=encrypted_note)
