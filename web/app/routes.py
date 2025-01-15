@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, render_template, request, jsonify, redirect, url_for, g
+from flask import Blueprint, abort, render_template, request, jsonify, g
 from web.app.crud import create_note_in_db, get_note_by_temporary_key, delete_note_from_db
 from web.app.database import get_db
 from sqlalchemy.sql import text
@@ -35,11 +35,6 @@ def create_note():
     json_data = request.get_json()
     create_note_in_db(g.db, json_data.get("note"), json_data.get("temporary_key"))
     return jsonify({"success": True}), 201
-
-
-@note_bp.route("/notes/<temporary_key>/<secret_part>", methods=["GET"])
-def redirect_to_confirm(temporary_key, secret_part):
-    return redirect(url_for('notes.confirm_view', temporary_key=temporary_key, secret_part=secret_part))
 
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])

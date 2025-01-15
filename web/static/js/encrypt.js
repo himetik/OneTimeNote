@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const result = await response.json();
             if (result.success) {
-                const baseUrl = "https://onetimenote.duckdns.org/notes";
+                const baseUrl = "https://onetimenote.duckdns.org/view";
                 const fullUrl = `${baseUrl}/${temporaryKey}/${secretPart}`;
                 showKeyModal(fullUrl);
                 noteTextarea.value = '';
