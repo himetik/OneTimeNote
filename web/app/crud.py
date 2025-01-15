@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from web.app.models import Note
-from sqlalchemy.sql import text
 
 
 class NoteService:
@@ -21,6 +20,5 @@ class NoteService:
         self.db.commit()
 
     def update_note_confirmation(self, temporary_key: str) -> None:
-        query = text("UPDATE notes SET is_confirmed = TRUE WHERE temporary_key = :temporary_key")
-        self.db.execute(query, {"temporary_key": temporary_key})
+        self.db.query(Note).filter(Note.temporary_key == temporary_key).update({"is_confirmed": True})
         self.db.commit()
