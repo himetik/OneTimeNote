@@ -26,19 +26,19 @@ def get_valid_note(temporary_key):
     return note
 
 @note_bp.route("/", methods=["GET"])
-def show_create_note_page():
+def get_create_note_page():
     return render_template("create-note.html")
 
 
 @note_bp.route("/creation", methods=["POST"])
-def create_note():
+def post_note():
     json_data = request.get_json()
     create_note_in_db(g.db, json_data.get("note"), json_data.get("temporary_key"))
     return jsonify({"success": True}), 201
 
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["GET"])
-def confirm_view(temporary_key, secret_part):
+def get_confirmation(temporary_key, secret_part):
     note = get_valid_note(temporary_key)
     if note.is_confirmed:
         return redirect(url_for('notes.get_note_by_key', temporary_key=temporary_key, secret_part=secret_part))
@@ -46,7 +46,7 @@ def confirm_view(temporary_key, secret_part):
 
 
 @note_bp.route("/confirm/<temporary_key>/<secret_part>", methods=["POST"])
-def confirm_note_view(temporary_key, secret_part):
+def post_confirmation(temporary_key, secret_part):
     note = get_valid_note(temporary_key)
     if not note.is_confirmed:
         update_note_confirmation(g.db, temporary_key)
