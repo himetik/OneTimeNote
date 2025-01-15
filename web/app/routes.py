@@ -26,7 +26,7 @@ def get_valid_note(temporary_key):
     return note
 
 @note_bp.route("/", methods=["GET"])
-def get_create_note_page():
+def get_creation_page():
     return render_template("create-note.html")
 
 
@@ -57,7 +57,7 @@ def post_confirmation(temporary_key, secret_part):
 def get_note_by_key(temporary_key, secret_part):
     note = get_valid_note(temporary_key)
     if not note.is_confirmed:
-        return redirect(url_for('notes.confirm_view', temporary_key=temporary_key, secret_part=secret_part))
+        return redirect(url_for('notes.get_confirmation', temporary_key=temporary_key, secret_part=secret_part))
     encrypted_note = note.note
     delete_note_from_db(g.db, note)
     return render_template("view-note.html", encrypted_note=encrypted_note)

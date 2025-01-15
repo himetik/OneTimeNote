@@ -6,7 +6,7 @@
         Once you open the note, it will be permanently deleted when you close the page.
     </p>
     <div class="mt-4">
-        <form action="{{ url_for('notes.confirm_note_view', temporary_key=temporary_key, secret_part=secret_part) }}" method="post">
+        <form action="{{ url_for('notes.post_confirmation', temporary_key=temporary_key, secret_part=secret_part) }}" method="post">
             <button type="submit" class="btn btn-primary">Confirm</button>
         </form>
     </div>
