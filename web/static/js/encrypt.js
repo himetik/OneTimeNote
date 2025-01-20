@@ -45,6 +45,20 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('beforeunload', function () {
         noteTextarea.value = '';
     });
+
+    noteTextarea.addEventListener('keydown', function (event) {
+        if (event.key === 'Tab') {
+            event.preventDefault();
+
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+
+            this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
+
+            this.selectionStart = this.selectionEnd = start + 1;
+        }
+    });
+
     document.getElementById('save-button').addEventListener('click', async function () {
         const originalNote = noteTextarea.value;
         if (!originalNote.trim()) {
@@ -92,4 +106,12 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Произошла ошибка: ' + error.message);
         }
     });
+
+    function showKeyModal(link) {
+        const modal = new bootstrap.Modal(document.getElementById('keyModal'));
+        const linkInput = document.getElementById('noteLinkDisplay');
+        linkInput.value = link;
+        modal.show();
+    }
+
 });
