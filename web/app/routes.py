@@ -69,6 +69,6 @@ def get_note_by_key(temporary_key, secret_part):
 def health_check():
     try:
         g.db.query(Note).first()
-        return jsonify({"status": "healthy"}), 2000
+        return jsonify({"status": "healthy"}), 200
     except Exception as error:
         return jsonify({"status": "unhealthy", "error": str(error)}), 500
