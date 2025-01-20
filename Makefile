@@ -10,3 +10,4 @@ clean:
 		@sudo docker system prune -f
 check:
 		@pytest tests/
+		@ruff check web/ tests/
