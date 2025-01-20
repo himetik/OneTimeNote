@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, render_template, request, jsonify, g, redirect, url_for
 from web.app.crud import NoteService
 from web.app.database import get_db
-from sqlalchemy.sql import text
+from web.app.models import Note
 
 
 note_bp = Blueprint('notes', __name__)
@@ -67,5 +67,8 @@ def get_note_by_key(temporary_key, secret_part):
 
 @note_bp.route("/health", methods=["GET"])
 def health_check():
-    g.db.execute(text('SELECT 1'))
-    return jsonify({"status": "healthy"}), 200
+    try:
+        g.db.query(Note).first()
+        return jsonify({"status": "healthy"}), 200
+    except Exception as error:
+        return jsonify({"status": "unhealthy", "error": str(error)}), 500
