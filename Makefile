@@ -8,3 +8,5 @@ clean:
 		@find . -type f -name "*.pyc" -delete
 		@find . -type f -name "*.log" -delete
 		@sudo docker system prune -f
+check:
+		@pytest tests/

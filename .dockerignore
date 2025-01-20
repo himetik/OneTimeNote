@@ -5,6 +5,7 @@ __pycache__
 .Python
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
@@ -34,3 +35,5 @@ dist/
 *.egg
 *.egg-info/
 *.whl
+tests/
+pytest.ini
